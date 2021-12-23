@@ -21,12 +21,12 @@ async def get_rate():
                           database=os.environ["POSTGRES_DB"]) as connection:
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT CHAR_CODE, VALUE, DATE "
+            cursor.execute(f"SELECT CHAR_CODE, VALUE, COUNT, DATE "
                            f"FROM {os.environ['CURRENCY_TAB']} "
                            f"WHERE DATE='{today}'")
             result = []
             for rec in cursor:
-                result.append({'Currency': rec[0], 'Rate': rec[1], 'Date': rec[2]})
+                result.append({'Currency': rec[0], 'Rate': rec[1], 'Count': rec[2], 'Date': rec[3]})
     return result
 
 
@@ -45,7 +45,7 @@ async def get_definite_rate(char_code: str, date: Optional[str] = None):
                           database=os.environ["POSTGRES_DB"]) as connection:
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT CHAR_CODE, VALUE, DATE "
+            cursor.execute(f"SELECT CHAR_CODE, VALUE, COUNT, DATE "
                            f"FROM {os.environ['CURRENCY_TAB']} "
                            f"WHERE CHAR_CODE='{char_code.upper()}' AND DATE='{date}'")
             if not bool(cursor.rowcount):
@@ -54,4 +54,5 @@ async def get_definite_rate(char_code: str, date: Optional[str] = None):
                 rec = cursor.fetchone()
                 return {'Currency': rec[0],
                         'Rate': rec[1],
-                        'Date': rec[2]}
+                        'Count': rec[2],
+                        'Date': rec[3]}
