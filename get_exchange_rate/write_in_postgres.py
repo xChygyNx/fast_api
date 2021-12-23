@@ -8,9 +8,9 @@ load_dotenv(find_dotenv())
 
 
 def insert_record_in_table(record: OrderedDict, cursor, today: str):
-    cursor.execute(f'SELECT * FROM currency_table WHERE CHAR_CODE=\'{record["CharCode"]}\' AND DATE=\'{today}\'')
+    cursor.execute(f'SELECT * FROM {os.environ["CURRENCY_TABLE"]} WHERE CHAR_CODE=\'{record["CharCode"]}\' AND DATE=\'{today}\'')
     if not bool(cursor.rowcount):
-        insert_query = f'INSERT INTO currency_table (CHAR_CODE, VALUE, DATE) ' \
+        insert_query = f'INSERT INTO {os.environ["CURRENCY_TABLE"]} (CHAR_CODE, VALUE, DATE) ' \
                        f'VALUES (\'{record["CharCode"]}\', {record["Value"].replace(",", ".")}, \'{today}\')'
         cursor.execute(insert_query)
 

@@ -22,7 +22,7 @@ async def get_rate():
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
             cursor.execute(f"SELECT CHAR_CODE, VALUE, DATE "
-                           f"FROM currency_table "
+                           f"FROM {os.environ['CURRENCY_TABLE']} "
                            f"WHERE DATE='{today}'")
             result = []
             for rec in cursor:
@@ -46,7 +46,7 @@ async def get_definite_rate(char_code: str, date: Optional[str] = None):
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
             cursor.execute(f"SELECT CHAR_CODE, VALUE, DATE "
-                           f"FROM currency_table "
+                           f"FROM {os.environ['CURRENCY_TABLE']} "
                            f"WHERE CHAR_CODE='{char_code.upper()}' AND DATE='{date}'")
             if not bool(cursor.rowcount):
                 return "Absence need information"
