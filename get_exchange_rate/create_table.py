@@ -9,7 +9,7 @@ load_dotenv(find_dotenv())
 def create_currency_table(cursor):
     cursor.execute('SELECT * FROM information_schema.tables WHERE table_name=\'{os.environ["CURRENCY_TABLE"]}\'')
     if not bool(cursor.rowcount):
-        query = f'CREATE TABLE {os.environ["CURRENCY_TABLE"]} ' \
+        query = f'CREATE TABLE {os.environ["CURRENCY_TAB"]} ' \
                 f'(ID serial PRIMARY KEY NOT NULL, ' \
                 f'CHAR_CODE TEXT NOT NULL, ' \
                 f'VALUE REAL NOT NULL, ' \
