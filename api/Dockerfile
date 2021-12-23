@@ -11,4 +11,4 @@ ENV POSTGRES_HOST=postgres
 ENV POSTGRES_PORT=5432
 ENV POSTGRES_DB=exchange_db
 ENV CURRENCY_TAB=currency_table
-CMD uvicorn src.python_bin.main:app --host 0.0.0.0
+CMD uvicorn src.python_bin.main:app --host 0.0.0.0 --reload
