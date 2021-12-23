@@ -1,6 +1,10 @@
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from typing import OrderedDict
+import os
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
 
 
 def insert_record_in_table(record: OrderedDict, cursor, today: str):
@@ -13,8 +17,9 @@ def insert_record_in_table(record: OrderedDict, cursor, today: str):
 
 def write_rate(valutes: OrderedDict, today: str):
     # Подключение к существующей базе данных
-    with psycopg2.connect(user="admin", password="very_difficult_password",
-                        host="postgres", port="5432", database="exchange_db") as connection:
+    with psycopg2.connect(user=os.environ["POSTGRES_USER"], password=os.environ["POSTGRES_PASSWORD"],
+                          host=os.environ["POSTGRES_HOST"], port=os.environ["POSTGRES_PORT"],
+                          database=os.environ["POSTGRES_DB"]) as connection:
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
             for record in valutes:

@@ -1,10 +1,12 @@
 from typing import Optional
 from datetime import datetime
-
 from fastapi import FastAPI
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import os
+from dotenv import load_dotenv, find_dotenv
 
+load_dotenv(find_dotenv())
 app = FastAPI()
 CURRENCIES = {'AUD', 'AZN', 'GBP', 'AMD', 'BYN', 'BGN', 'BRL', 'HUF', 'HKD',
               'DKK', 'USD', 'EUR', 'INR', 'KZT', 'CAD', 'KGS', 'CNY', 'MDL',
@@ -14,8 +16,9 @@ CURRENCIES = {'AUD', 'AZN', 'GBP', 'AMD', 'BYN', 'BGN', 'BRL', 'HUF', 'HKD',
 @app.get("/rate")
 async def get_rate():
     today = datetime.today().strftime('%d.%m.%Y')
-    with psycopg2.connect(user="admin", password="very_difficult_password",
-                          host="postgres", port="5432", database="exchange_db") as connection:
+    with psycopg2.connect(user=os.environ["POSTGRES_USER"], password=os.environ["POSTGRES_PASSWORD"],
+                          host=os.environ["POSTGRES_HOST"], port=os.environ["POSTGRES_PORT"],
+                          database=os.environ["POSTGRES_DB"]) as connection:
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
             cursor.execute(f"SELECT CHAR_CODE, VALUE, DATE "
@@ -37,8 +40,9 @@ async def get_definite_rate(char_code: str, date: Optional[str] = None):
         datetime.strptime(date, '%d.%m.%Y')
     except ValueError:
         return "Send invalid date"
-    with psycopg2.connect(user="admin", password="very_difficult_password",
-                        host="postgres", port="5432", database="exchange_db") as connection:
+    with psycopg2.connect(user=os.environ["POSTGRES_USER"], password=os.environ["POSTGRES_PASSWORD"],
+                          host=os.environ["POSTGRES_HOST"], port=os.environ["POSTGRES_PORT"],
+                          database=os.environ["POSTGRES_DB"]) as connection:
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
             cursor.execute(f"SELECT CHAR_CODE, VALUE, DATE "
