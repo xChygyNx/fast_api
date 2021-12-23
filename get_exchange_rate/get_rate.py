@@ -2,6 +2,7 @@ import requests
 from datetime import datetime
 import xmltodict
 import write_in_postgres
+from dotenv import load_dotenv, find_dotenv
 
 
 class RequestError(Exception):
@@ -28,4 +29,5 @@ def request_cbr():
 
 
 if __name__ == '__main__':
+    load_dotenv(find_dotenv())
     request_cbr()

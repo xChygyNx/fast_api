@@ -19,6 +19,7 @@ def create_currency_table(cursor):
 
 
 if __name__ == '__main__':
+    load_dotenv(find_dotenv())
     with psycopg2.connect(user=os.environ["POSTGRES_USER"], password=os.environ["POSTGRES_PASSWORD"],
                           host=os.environ["POSTGRES_HOST"], port=os.environ["POSTGRES_PORT"],
                           database=os.environ["POSTGRES_DB"]) as connection:

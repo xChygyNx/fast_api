@@ -56,3 +56,6 @@ async def get_definite_rate(char_code: str, date: Optional[str] = None):
                         'Rate': rec[1],
                         'Count': rec[2],
                         'Date': rec[3]}
+
+if __name__ == '__main__':
+    load_dotenv(find_dotenv())
