@@ -31,7 +31,7 @@ async def get_rate():
                            f"WHERE DATE='{today}'")
             result = []
             for rec in cursor:
-                result.append({'Code': rec[0], 'Currency': rec[1], 'Rate': rec[2], 'Count': rec[3], 'Date': rec[4]})
+                result.append({'Code': rec[0], 'Count': rec[3], 'Currency': rec[1], 'Rate': rec[2], 'Date': rec[4]})
     return result
 
 
@@ -66,9 +66,9 @@ async def get_definite_rate(char_code: str, date: Optional[str] = None):
             else:
                 rec = cursor.fetchone()
                 return {'Code': rec[0],
+                        'Count': rec[3],
                         'Currency': rec[1],
                         'Rate': rec[2],
-                        'Count': rec[3],
                         'Date': rec[4]}
 
 if __name__ == '__main__':
