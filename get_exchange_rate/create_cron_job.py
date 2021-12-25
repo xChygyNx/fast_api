@@ -1,25 +1,25 @@
 from crontab import CronTab
-import os
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from create_table import create_currency_table
-from get_rate import request_cbr
 from dotenv import load_dotenv, find_dotenv
+from typing import Optional
 
 load_dotenv(find_dotenv())
 
 
+def add_cron_job(command: str, moment: str, comment: Optional[str] = 'Some job') -> None:
+    """
+    Функция которая добавляет в CronTable команду command, которая должна выполнятся по расписанию
+
+    :param command: - Bash комманда, которая должна выполнятся по расписанию
+    :param moment: - расписание в формате cron
+    :param comment: - комментарий к задаче
+    :return:
+    """
+    with CronTab(user=True) as my_cron:
+        job = my_cron.new(command=command, comment=comment)
+        job.setall(moment)
+        job.run()
+
+
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
-    with psycopg2.connect(user=os.environ["POSTGRES_USER"], password=os.environ["POSTGRES_PASSWORD"],
-                          host=os.environ["POSTGRES_HOST"], port=os.environ["POSTGRES_PORT"],
-                          database=os.environ["POSTGRES_DB"]) as connection:
-        connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-        with connection.cursor() as cursor:
-            create_currency_table(cursor)
-    request_cbr()
-    user = os.system('whoami')
-    with CronTab(user=True) as my_cron:
-        job = my_cron.new(command='python get_rate.py', comment='Get exchange rate from CBR')
-        job.setall('1 0 * * *')
-        job.run()
+    add_cron_job(command='python get_rate.py', moment='1 0 * * *', comment='Get exchange rate from CBR')

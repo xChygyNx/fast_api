@@ -15,23 +15,36 @@ CURRENCIES = {'AUD', 'AZN', 'GBP', 'AMD', 'BYN', 'BGN', 'BRL', 'HUF', 'HKD',
 
 @app.get("/rate")
 async def get_rate():
+    """
+    Возвращает полный список курсов валют на сегодняшнее число
+
+    :return:
+    """
     today = datetime.today().strftime('%d.%m.%Y')
     with psycopg2.connect(user=os.environ["POSTGRES_USER"], password=os.environ["POSTGRES_PASSWORD"],
                           host=os.environ["POSTGRES_HOST"], port=os.environ["POSTGRES_PORT"],
                           database=os.environ["POSTGRES_DB"]) as connection:
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT CHAR_CODE, VALUE, COUNT, DATE "
+            cursor.execute(f"SELECT CHAR_CODE, NAME, VALUE, COUNT, DATE "
                            f"FROM {os.environ['CURRENCY_TAB']} "
                            f"WHERE DATE='{today}'")
             result = []
             for rec in cursor:
-                result.append({'Currency': rec[0], 'Rate': rec[1], 'Count': rec[2], 'Date': rec[3]})
+                result.append({'Code': rec[0], 'Currency': rec[1], 'Rate': rec[2], 'Count': rec[3], 'Date': rec[4]})
     return result
 
 
 @app.get("/rate/{char_code}")
 async def get_definite_rate(char_code: str, date: Optional[str] = None):
+    """
+    Возвращает курс валюты, имеющий заданный тикер и на заданную дату (по умолчпнию
+    на сегодняшнее число)
+
+    :param char_code: - тикер валюты
+    :param date: - интересующая дата в формате '%dd.%mm.%yyyy'
+    :return:
+    """
     if char_code.upper() not in CURRENCIES:
         return 'ERROR: Send currency char code is unknown'
     if date is None:
@@ -45,17 +58,18 @@ async def get_definite_rate(char_code: str, date: Optional[str] = None):
                           database=os.environ["POSTGRES_DB"]) as connection:
         connection.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
         with connection.cursor() as cursor:
-            cursor.execute(f"SELECT CHAR_CODE, VALUE, COUNT, DATE "
+            cursor.execute(f"SELECT CHAR_CODE, NAME, VALUE, COUNT, DATE "
                            f"FROM {os.environ['CURRENCY_TAB']} "
                            f"WHERE CHAR_CODE='{char_code.upper()}' AND DATE='{date}'")
             if not bool(cursor.rowcount):
                 return "Absence need information"
             else:
                 rec = cursor.fetchone()
-                return {'Currency': rec[0],
-                        'Rate': rec[1],
-                        'Count': rec[2],
-                        'Date': rec[3]}
+                return {'Code': rec[0],
+                        'Currency': rec[1],
+                        'Rate': rec[2],
+                        'Count': rec[3],
+                        'Date': rec[4]}
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())

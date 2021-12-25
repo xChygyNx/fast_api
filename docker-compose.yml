@@ -1,9 +1,10 @@
-# Сервис для вывода курса валют по
+# Сервис для вывода курса валют по запросу через HTTP
 
 
 version: "3.9"
 services:
   postgres:
+    # БД PostgreSQL
     image: postgres:13.3
     environment:
       POSTGRES_DB: "exchange_db"
@@ -22,6 +23,8 @@ services:
       - exchange_rate
 
   get_exchange_rate:
+    # Сервис создающий таблицу с курсами валют и заполняющий ее по расписанию
+    # информацией, полученной от ЦБР
     build:
       context: get_exchange_rate
     environment:
@@ -33,6 +36,7 @@ services:
       - postgres
 
   api:
+    # Web-сервер, который будет выдавать курсы валют по запросам пользователей
     build:
       context: api
     restart: always

@@ -8,11 +8,18 @@ load_dotenv(find_dotenv())
 
 
 def create_currency_table(cursor):
+    """
+    Функция которая создает таблицу currency_table в БД
+
+    :param cursor: - psycopg2-курсор, необходимый для выполнения действий с БД exchange_rate
+    :return:
+    """
     cursor.execute(f'SELECT * FROM information_schema.tables WHERE table_name=\'{os.environ["CURRENCY_TAB"]}\'')
     if not bool(cursor.rowcount):
         query = f'CREATE TABLE {os.environ["CURRENCY_TAB"]} ' \
                 f'(ID serial PRIMARY KEY NOT NULL, ' \
                 f'CHAR_CODE TEXT NOT NULL, ' \
+                f'NAME TEXT NOT NULL, ' \
                 f'COUNT TEXT NOT NULL, ' \
                 f'VALUE REAL NOT NULL, ' \
                 f'DATE TEXT NOT NULL);'
